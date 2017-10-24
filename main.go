@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -42,8 +43,22 @@ func main() {
 		}
 	})
 
+	r.GET("/user", func(c *gin.Context) {
+		var users []entity.User
+		connection.Find(&users)
+		c.JSON(200, users)
+	})
+
+	r.GET("/user/:id", func(c *gin.Context) {
+		var user entity.User
+		userID, _ := strconv.Atoi(c.Param("id"))
+		connection.Find(&user, userID)
+		c.JSON(200, user)
+	})
+
 	r.DELETE("/user/:id", func(c *gin.Context) {
-		connection.Where("id = ?", c.Param("id")).Delete(entity.User{})
+		userID, _ := strconv.Atoi(c.Param("id"))
+		connection.Where("ID = ?", userID).Delete(entity.User{})
 	})
 
 	r.GET("/userinfo", func(c *gin.Context) {
