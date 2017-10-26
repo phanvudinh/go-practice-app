@@ -34,6 +34,22 @@ func main() {
 
 	r := gin.Default()
 
+	r.POST("/users", func(c *gin.Context) {
+		var users []entity.User
+
+		if err = c.BindJSON(&users); err == nil {
+			i := 0
+			length := len(users)
+			for i < length {
+				fmt.Println("create " + users[i].Name)
+				connection.Create(&entity.User{Name: users[i].Name, Age: users[i].Age, Address: users[i].Address, Avatar: users[i].Avatar})
+				i++
+			}
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		}
+	})
+
 	r.POST("/user", func(c *gin.Context) {
 		var user entity.User
 		if err = c.BindJSON(&user); err == nil {
@@ -57,8 +73,10 @@ func main() {
 	})
 
 	r.DELETE("/user/:id", func(c *gin.Context) {
+		var user entity.User
 		userID, _ := strconv.Atoi(c.Param("id"))
-		connection.Where("ID = ?", userID).Delete(entity.User{})
+		connection.Find(&user, userID)
+		connection.Unscoped().Delete(&user)
 	})
 
 	r.GET("/userinfo", func(c *gin.Context) {

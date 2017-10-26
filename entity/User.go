@@ -10,4 +10,5 @@ type User struct {
 	Age     int    `json:"age"`
 	Name    string `gorm:"size:255" json:"name"`
 	Address string `gorm:"type:varchar(100) " json:"address"`
+	Avatar  string `gorm:"type:varchar(100) " json:"avatar"`
 }
